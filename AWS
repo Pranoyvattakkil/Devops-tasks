@@ -1,0 +1,18 @@
+AWS -
+
+services>compute>EC2>Launch instance
+EC2(Elastic cloud compute)
+compute means Cpu and RAM can be used
+Cloud because its in cloud
+elastic because no of CPU and RAM can be changed
+
+Server - its a high configuration computer
+
+HTTPS:443
+RDP : 3389
+SSH:22
+
+task - 1
+Create EC2 instance for Linux and windows
+Access Linux through browser, putty or puttygen, mobaxterm
+Access windows using RDP
