@@ -1,0 +1,415 @@
+Method of mobaxtrem to access linux
+
+install>settings>configuration>terminal(Paste using right click[check],display scrollbar[check]),SSH(ssh keep alive[]),Misc(home tab is replaced when starting new tab[], Toolbar(move save)
+
+
+In aws, select instance and click on connect, ssh client(select the user name)
+
+In mobaxtrem, session>new session>ssh>go to advanced ssh setttings>use private key and browse for the pem file
+
+______________________________________________
+
+For MAC users
+
+Open terminal>cd to downloads>run the command,chmod 400 linux1.pem(whatever is u r per file)
+
+Now go to linux instance in aws>ssh client>copy that example user name details completely and paste it on the terminal.
+
+
+___________________________________________
+
+Unix flavours
+
+Linux
+Mac OS
+AIX
+Solaris
+HP-UX
+
+Linux flavours
+
+RHEL
+CentOS
+Ubuntu
+Amazone Linux
+Fedora
+Linux Mint
+OpenSUSE
+Kali Linux
+
+_____________________________________
+
+Sept-2
+Linux advantages :
+1)open source
+2)Secure
+       A)Hacker(hacking linux is difficult)
+        B)Virus(if a package downloaded from internet with virus,its designed like virus will be confined to particular file or folder here you installed. So just remove the folder/file this will help to free of virus)
+3)Need less resources(linux is with only cli whereas windows with cli and gui)
+4)multi user and multi tasking(multiple user accounts can be created and they can do whatever they want. in windows creating user accounts is limited)
+
+Architecture of Linux
+
+In windows
+User > shell(on top extra layer-GUI) > OS > H/W
+In linux
+user>shell>kernal>H/W
+
+File system hierarchy
+
+In Windows,we called folder,Administrator,OS, Software ,\, whereas in Linux we call directory, root user,Kernal,Package,/
+
+/ in linux is top level root directory where as in windows its c drive
+
+Root - home of root user
+
+
+Home - home directory of other user
+
+Boot - bootable files(OS related files)
+
+Etc - contains all configurations(each and every details of the system)
+
+Usr - contains all softwares
+
+Bin - contains all the commands executed by user and root(like they preconfigured the commands)
+
+Sbin - Contains commands executed by root
+
+Sept 5
+
+Sudo su -     - you will become root user
+
+Ctrl + L        - to clear the terminal
+
+4 steps to create a file in linux
+
+1. Cat
+2. Touch
+3. Nano
+4. Vi/Vim
+
+Linux commands must be in lower case, they are case sensitive
+
+Cat
+cat > file1(file name) then add your content , then press enter
+To exit from from here use ctrl + D
+To add. Contents to file1 then execute, cat >> file1 and press enter then exit it by using ctrl + D
+
+To view the content of the file by cat file1
+
+ls      - to list the file/dir
+
+Touch
+Cmd : touch file2 to create empty file
+
+Nano
+Cmd : nano file3 to create file
+To exit use ctrl + x, it will ask if you need to save the file then press Y(capital Y)
+
+Vi/Vim
+
+Cmd : vi file4, then press i(small letter i) to insert
+To save and quit esc :wq! Then press enter
+
+By using touch you can create empty file, by using nano and vi to edit the content, by using cat you can override and add the data but you can’t edit the data
+
+To create directory
+
+Cmd : mkdir dir1
+
+Cmd : ls -l      long list(it will give all details about file and directory. When u see d the its directory hen you see - the its file)
+
+Purpose of hidden files - its to protect the files from you(OS related files it should not be deleted by mistake). When you put .(dot) infant of file or dir before creating it then this file will become hidden
+
+Cmd: ls -a to show all files including hidden files
+Cmd: ls -la long list of all items including hidden items
+
+Contact : contactsaifaculty@gmail.com
+
+
+
+Sept-6
+
+Cmd: mkdir -p dira/dirb/dirc (it will create directory c inside the b directory and which will be inside the a directory) and here p means parent
+
+In linux single . (Dot) represents current directory and double . (Dot) represents previous directory.
+
+cd dira/dirb/dirc - if you wants to go to dirc in one step
+cd ../../.. - if you want to go back to the first directory
+
+cmd: pwd - print working directory
+
+cp - to copy the command
+Syntax : cp source destination
+Eg : cp file1 dir1
+If you’re copying directory then
+Eg: cp -r dir2 dir3
+
+mv - to move a directory or a file/to rename it
+
+mv file1c dir1
+
+If you want to rename it then
+
+mv file2c dir1/file3c
+
+
+Tree - to know the hierarchy of the file system
+Install package by yum install tree -y
+
+Path
+
+Always understand the path that you’re working. No need to cd into the directory/file if you need to work on it
+
+/ - top level root directory(represented with . In tree)
+Root - home directory of root user
+Home - home directory of other user
+
+Sept 8
+
+cmd: touch ../file1 - it will create a file in your previous directory because of that double .(dot)
+
+~ - home directory, house of other user
+/ - house of root directory
+
+Cmd : rm -rf /tmp/* - it will delete all files in tmp directory(* is to select all files)
+
+Tab key is used for autocomplete also if the particular file is there in the particular location
+
+Copy - highlight paste - right click
+
+Cmd : ctrl + c - it will not execute the previous command, it will abort it
+
+Grep - global regular expression pin (to search for particular word)
+Eg : cmd : grep root /etc/passwd
+
+Less/more - this will show the content inside the file but cat is preferred
+
+Cmd : head -3 /etc/passwd - first 3 lines will show
+Cmd : tail /etc/passwd - last 10 lines will show
+
+Sort
+Cmd : sort test file  - entire data will be sorted and it will not modify the existing content
+
+Sept 9
+
+Cmd : hostname  it will give you the DNS name
+Cmd : hostname -i it will give private ip
+Cmd : ifconfig it will also show ip address
+Cmd : cat /etc/os-release it will give the details of the OS
+
+* - wild card character or all (you can add this to the end of the command or before, so this star will give all the details if you don’t know it)
+Cmd: cat hello* (the it will open the hello file automatically)
+
+
+Yum - to deal with packages and updates
+
+Cmd : yum install httpd -y
+Cmd : yum update httpd -y
+Cmd : yum remove httpd -y
+Cmd : yum list installed - this will show the list of packages installed with version number
+Cmd : yum list installed | grep httpd*
+|   - pipe is used to combine 2 commands
+
+Cmd : which httpd
+Cmd: which tree
+Cmd : which git
+
+With “which" command we can get know if package is there
+
+Cmd : service httpd start
+Cmd: service httpd status
+Cmd : service httpd stop
+Cmd : service https status
+Cmd : service httpd reload - whenever you have updated the package then use this command
+
+Systemctl or service commands(the service commands above can be changed to systemctl as its the new approach)even though if you're running service command it will work as systemctl commands only
+
+Cmd : systemctl start httpd
+Cmd: systemctl status httpd
+
+Cmd : chkconfig httpd on  or chkconfig httpd off- it will automatically update the package once installed, unlike manually updating (using reload command) everytime. New alternative command for this is 
+Cmd : systemctl enable httpd or systemctl disable httpd
+
+Find command
+Cmd : find -type f (f means file, it will show all files in including hidden files in the current directory)
+Cmd : find -type d - to show all the directory
+Cmd : find / -type f -name os-release (this will search and find os-release file inside /)
+Cmd : find / -type f -name passwd (like find the file inside root directory and its name will be passwd)
+Cmd : cd - this command will help you to comeback to home
+
+How to create user
+
+Cmd : useradd raj
+Cmd: cat /etc/passwd - it will show list of users
+Cmd : groupadd devops
+Cmd : cat /etc/group
+
+When you create a user , with the same name a group will be created and this user will be part of it. Vice versa won’t happen
+
+So here we will be creating 10 users and adding in to a group then assigning permission to the group so it will cascade to all users inside the group
+
+Cmd : gpasswd -a raj devops (a for add)
+Suppose I want to add 10 users here then
+Cmd : gpasswd -M raj,sai,hari,krish,lal,pl,bal,ot,ty,wo devops (M for multiple)
+Suppose is I want to remove any
+Cmd : gpasswd -d raj devops - (d for delete)
+
+Softlink and hardlink
+
+In windows we call shortcut and in linux we call it as softlink
+Cmd : cd /var/www/html
+Cmd: touch index.html
+Cmd:cat index.html
+Cmd : Cd
+Cmd : ln -s /var/www/html/index.html softindex (ln is for link and s is for soft)
+Cmd : ls
+Cmd : ls -l
+
+U can add data in soft index but indirectly it keeps in index.html file
+
+Cmd : vi softindex
+
+So when u delete softindex then there won’t be any issue with index.html(because its act like a shortcut) but when you delete index.html then whole file will be affected and softlink will become broken.
+
+Hardlink :
+This will be like whatever is the content in the original location, this will be present in the same shortcut location as well. Like its complete backup
+So if u delete original file/hardlink file it will not affect the other.
+Softlink is a shortcut and hardlink is a backup
+
+Cmd : ln /var/www/html/index.html hardindex
+
+Cmd : cat  >  hard index
+Mygoogle and ctrl +d(to exit)
+
+Cmd : cat  >>  /var/www/html/index.html
+Pranoydemy and ctrl +d(to exit)
+
+Sept 12
+
+Zip is actually a file, when you apply zip to a directory then it will become file(check the zip file using ls -l command)
+
+Zip is used to reduce the size of your document
+
+Tar and gz
+
+Tar - used to pack
+Gz- used to compress
+
+Cmd : tar -cvf dira.tar dira (c - create v - verbose to show live output and f - forcefully) you should provide output ie, .tar file in the command
+Cmd : gzip dira.tar - after this command it will become dira.tar.gz file
+How to unzip the file
+Cmd : gunzip dira.tar.gz
+Cmd : tar -xvf dira.tar (x-extract, v-verbose,f-forcefully)
+To do this in one command
+Cmd : tar -cvzf dira.tar.gz dira (giving tar and zip in one line)
+Cmd : tar -xvzf dira.tar.gz (giving untar and unzip in one line)
+
+Redhat - Amazone linux, rhel, centos they are using yum to install the package
+Debian - ubuntu using apt to install the package
+
+How files are getting in linux?
+Some packages will be in redhat repository by default, from where you can directly install without downloading
+Some packages are in internet and requires download first and then install eg : Jenkins
+
+To install - yum is used as the command
+To download from internet -  wget is used as the command
+
+Java is prerequisite to install Jenkins
+Cmd : wget -o and rest of command from jenkins.io  this helps to download jenkin package
+Cmd : yum install Java*-y
+Cmd : yum install jenkins -y
+
+Permissions
+
+File will be 0 bytes initially
+Directory will be 6 bytes
+
+When you create file 1 hardlink will be created
+When you create directory 2 hardlink will be created
+
+R- read - 4- opening
+W-write - 2- you can delete, edit
+X-execute - 1- you can install or just running
+
+First set of perm - belong to Owner
+Second set of perm - belong to owners group members
+Third set of perm - all other users
+
+A directory will be having 755 permission by default
+A file will be having 644 permission by default
+
+Symbolic method and absolute number
+
+Cmd : chown - to change owner
+Cmd chgrp - to change owners group
+Cmd : chmod - to change permission
+
+Cmd : chmod 777 dirb     - u r giving full permissions
+Cmd : chown raj dira
+
+Cmd : tail -5 /etc/passwd. - to check if there is a user called raj, if not create new 
+
+Cmd : useradd raj
+
+Sept-13
+
+Permissions
+For file 
+R - u can open
+W-u can edit the content
+X-run
+
+For directory
+R-you can perform ls
+W-add,del/rename
+X-you can cd into that directory
+
+Rm -rf  *- to remove unwanted things
+
+How to set password to any user 
+
+Cmd : tail -3 /etc/passwd so it will give raj as existing user
+Cmd : passwd raj
+
+Now we are going to login as raj user, for that root user need to do the following
+Cmd : vi /etc/ssh/sshd_config
+
+Scroll down, then you have to change the line PasswordAuthentication No, to Password Authentication yes
+Then you have to restart the sshd service
+Cmd : service sshd reload
+
+How to open terminal for other user in mobaxterm
+
+Now in mobaxterm > click on session> new session>ssh>enter user name as raj@dns name from ec2 instance>ok then enter the password created
+
+If u run sudo su - then it will not help you to switch to root user, because normal users are not allowed to become root user. Only ec2-user can do that
+
+to login as new user in linux
+cmd : ssh -i "Paru.pem" raj@ec2-52-13-11-42.us-west-2.compute.amazonaws.com
+then you have to enter the password
+
+How root user can control other user permissions?
+In root,
+Cmd : cd temp
+
+Cmd : touch file1
+Cmd : chmod 644 file1
+This will give read access to raj user(last 4 represent that)
+
+In raj,
+Cmd : cat file1, this will work because raj has read access
+Cmd : cat > file1 it will not work because he dosent have write permission.
+
+for directory
+In root,
+Cmd : cd temp
+Cmd : mkdire dir1
+Cmd ls -l
+Cmd : chmod 750 dir1
+
+In raj,
+Cmd : cd temp
+Cmd : cd dir1 , it won’t work
+Cmd : ls dir1 , it won’t work, because we revoked permission
