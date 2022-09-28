@@ -1,0 +1,542 @@
+Git
+Its a store where we store the code
+SCM(Source code management)
+Source code management is a store where we store code and manage(add/delete,append) other things
+
+Who use this
+-developer(code)
+-testing test(test)
+-devops(scripts)
+
+Different people from different team can store their code simultaneously to Git
+
+-It acts like a pipeline between offshore and onshore teams
+-Helps in achieving teamwork(even though time zone is diffrent they can work as a team)
+-Track changes(Minute levels)
+
+Scm tools
+
+Git(most advanced tool)
+Svn
+Perforce
+Clearcase
+
+Git operations
+Will create one directory first and give any name(may be Mumbai ec2). Inside the directory run the command git init .  after this command this will divide to 3 stages
+1)Work dir/workspace
+2)Stage /index
+3)Local repo(inside one branch created as main)
+
+
+
+
+Add - sending copy from work dir to staging area
+Commit - sending copy from staging area to local repo that too inside main branch
+Here after adding the code that will go to staging and then to local repo. From there team lead may push it to GitHub which is a centralised storage.
+
+Github - provided by Microsoft - its an online storage and act like central repository
+Bitbucket - by Atlassian
+
+Git is the whole thing and Github is a part of it. in some companies GitHub is replaced by bitbucket.
+
+Now in second stage
+
+Other guy from other timezone pulls the existing code from GitHub and he will also have workdir,stage,and local repo. Automatically this code from GitHub will be copied to workspace, stage and local repo
+
+Now other guy will add some more code, then he provide add data so the appended data will go to stage from workspace, then he will commit and it will come to local repo which having the main branch. Then he will push it back to GitHub
+
+Every time we commit we will get commit id
+
+Important terminology
+
+- repository(called in git)/depot(called in other tools)
+its a storage(folder)
+- server (EC2 instance)
+Store all repos
+- work space/work dir/work tree
+ Where you work
+ Create, adding, editing,deleting files
+Where you see files physically & do modifications
+
+Sept -14
+
+You are allowed to work only in workspace/workdirectory
+
+Branch
+- Product is same, so one repo.but different tasks/idea
+- Merging - copying code from one branch to another
+- Main branch will be pushed to central repository
+- Each idea/task has one separate branch
+- Finally merge all branches
+- Can create any no of branch
+- Changes are personal to the particular branch
+- Can put files only in branches(not in repo directly)
+- Default branch is main
+
+Commit/check-in
+In git we call commit in svn we call checkin
+
+Sending copy of file from staging area to local repo is commit. U will get commit id everytime
+
+It storing changes in local repo permanently
+
+Version/version-id/commit-id
+- Reference to identify each change and who did that change
+- store changes in repo(will get commit id)(whenever a change is made , then new commit id will be created)
+- 40 alpha numeric characters
+- Concept - checksum(its a tool in linux generates binary value equal to data present in file)
+- Even if you change one dot, commit id will be changed
+- Track the changes using commit id
+
+Tag
+-for meaningful name (we cannot remember the committed id always)
+Snapshots
+-get any previous version(backup)
+- represents some data of particular time
+- Every time we commit ,a snapshot will be created in local repository. Even though if its not available in workspace file(worst case if its deleted) you can get it from local repository.
+- Stores the changes(appended data) only, not whole copy
+
+
+Why only git?
+
+Speed
+- snapshot concept(incremental backup- because this will store all data and consume less space)
+Parallel branching
+-multiple branches at a time unlike other scm tools
+Fully distributed
+- backup copy is available in multiple locations
+- No need internet connection. So no network latency
+- No need of central server separately.we can share code without using central repo
+- Each workspace will have its own repo internally
+That’s why we calling git as dvcs (distributed version control system)
+svcs vs dvcs
+For dvcs data is distributed fully so backup can be taken, In case of svcs if suppose we lost the central repository then data cannot be retrieved
+
+Git stages
+Workspace
+- physically see file & modify
+Staging /indexing area
+- buffer area(because between workspace and repository)
+- Takes snapshot
+Repository (local)
+- store changes locally
+Repository(central)
+- store changes centrally
+
+Types of repositories
+Bare repositories(central)
+- store & share only
+Non - bare repositories(local)
+Where you can modify the files
+
+Sept 16
+Create 2 instance in mumbai and London region
+
+
+
+Keypairs and security group are region specific
+
+Cmd : yum install git -y    in both instance
+Cmd : which git   to verify
+Cmd : git - -version    to know the version
+Version of git is 2.37.1
+
+Cmd : git config - -global user.name “sai” - in Mumbai instance
+Cmd : git config - -global user.name “Hari” - in London instance
+
+Cmd : git config - -global user.email “sai@gmail.com" - in Mumbai instance
+Cmd : git config - -global user.email “hari@gmail.com" - in London instance
+
+Cmd : git config - -list       - this will give the details about the above commands
+
+Why we are setting e mail and name ? Because commit id’s will have this e mail and name when they commits
+
+Cmd : date +%T -s “20:58:00” - this will help you to set the time
+
+Team lead will create a GitHub account and create a repository called central repo
+
+In mumbai region
+
+Cmd : mkdir mumbaigit
+Cmd : cd mumbaigit
+Cmd : git init
+Cmd : ls -a
+This will show .git file and this one is your local repo and it should not be deleted
+So its a hidden directory
+
+Cmd : vi myfile - insert some content
+
+Here workspace is the file u created ie, myfile and .git is the local repo and stage area is an imaginary one
+
+Cmd : git status
+
+It will give like myfile is an untracked file, because git will not track workspace it will only track stage area and local repo
+
+Now we need to send that file to stage area to take snapshot/backup
+
+Cmd : git add . (Why dot? Send all the untracked files from workspace to stage area)
+
+Cmd : git status         - now git understood that file is there but its not committed
+
+Cmd : git commit -m “ist commit”        (m means message)
+
+So the commit is permanently stored in local repo inside the branch
+
+Cmd : git log       - it will give you the commit id(40 alpha num no) and the author details and date and time
+
+Cmd : git show ff1a2c8      ( this will give data inside the created file, ie myfile here and also for the commit id, you can enter the first 7 letters from commit id)
+
+Cmd : git remote add origin https://github.com/pranoyvattakkil/centralrepo.git
+
+Above command is used to connect the local repo with central repo which is in remote location. This should be performed inside mumbaigit
+Origin is the short name given here to access central repo in future, u can use whatever u want
+
+Cmd : git remote -v       - is used to check whether central repo is connected to local repo after the above command
+
+Cmd : git branch    - this command will give result as master, ie there is a branch called master in local repo
+
+Cmd : git branch -M main           - this will change the name of master in to main(why? because git insist us to use main instead of master)
+
+Inside central repo there will be two stages, top stage and bottom stage. Top stage is equivalent to workspace and bottom stage is equivalent to local repo. So as the local repo has a main branch, this bottom stage of central repo will also have main branch.
+
+
+Cmd : git push origin main       -pushing from main branch of local repo to main branch of origin(central repository)
+This will ask for the GitHub credential , you have to give e mail id then u have to provide the token, this can be fetch from github>settings>developer settings>personal auth token > generate token
+
+Am adding further to myfile
+
+Cmd : vi myfile
+
+Cmd : git status
+Myfile is shown in red color because its still in workspace and needs to be added to stage area
+Cmd : git add .
+Cmd : git status
+Now u can see my file in green colour because the snapshot has been taken
+Cmd : git commit -m “2nd commit”
+This will commit towards local repo
+Cmd : git log
+This will show the list of commits 
+Cmd : git show 489134fd
+It will give the content inside the file includes existing and modified, with date and other details
+
+Attach or connect is a one time process, so no need to attach it again.
+
+Lets push it to central repository
+
+Cmd : git push origin main
+
+in London region
+
+Cmd : mkdir londongit
+Cmd : cd londongit
+Cmd : git init
+
+To establish the connection/attach here run below command
+Cmd : git remote add origin https://github.com/pranoyvattakkil/centralrepo.git
+
+Cmd : git remote -v   - to verify
+
+Cmd : git pull origin main   - we are pulling from central repository main
+It won’t ask for credential because its a public repository and pull operation is possible
+
+Here actually we pulled from main branch but its stored in Haris’ local repository master branch. We need to change this
+Cmd : git branch
+Cmd : git branch -M main
+Cmd : git branch
+Cmd : ls
+Cmd : cat myfile
+
+Cmd : git log
+This will show both commits belong to sai
+
+Now hari wants to add some data to it
+Cmd : vi myfile
+After adding data then run below
+Cmd : git status 
+Cmd : git add .
+Now stage area took snapshot
+Cmd : git commit -m “3rd commit”
+Cmd : git log
+This will give 3 commit and latest belong to hari
+
+Now this changed file needs to be pushed to central repository
+Cmd : git push origin main
+Enter the credentials
+
+Now sai will pull the content
+
+Mumbaigit
+Cmd : git pull origin main
+Cmd : ls
+Cmd : cat myfile
+Cmd : git log
+Cmd : git show 2a34hjkd
+Now sai is going to add some content
+Cmd : git add myfile (or git add . can be used)
+Cmd : git commit -m “4th commit”
+Cmd : git push origin main
+Cmd : git log
+
+You can see 4 th commit is now added in GitHub central repo
+
+Sept 19
+
+In mumbaigit
+
+Git ignore
+
+Create a file called .gitignore and add unwanted files to it
+
+Cmd : vi .gitignore
+Add the below content
+*.class
+*.py
+
+So the git will ignore this file with these extensions in future
+
+Cmd : git log -1 will show the latest commit
+Cmd : git log —oneline  this will show the summarised manner of commits
+
+Cmd : git log - -grep “files” is used to fetch the commit with files in it
+
+Branching strategy
+
+Cmd : git branch  to show the list of branch
+
+If you create a new branch then all the data from Main branch will be copied to new branch
+Cmd : git branch new
+Cmd : git branch
+
+Cmd : git checkout new    here branch will be changed to new from main
+
+Cmd : git branch
+
+Cmd : ls
+
+So the files from main is copied to new
+
+If you commit a file now in workspace then it will go to new file, because its a the target branch now
+
+- new     - means its pointing to that branch
+
+When you create a file that file can be seen from both branches workspaces until you add and commit. Once you commit for any branch then it won’t be visible for other branch
+
+Merging to main branch
+
+1. pull operation
+2. copy and paste operation
+
+Sitting in main branch do the below
+Cmd : git merge new
+
+Then whatever the file is in new branch will be merged to main branch
+
+Now push the main branch content to central repo
+
+Cmd : git push origin main
+
+Git conflict
+
+While merging we may get errors ie, git conflict
+
+it will occur when two files having same name and different content in it.
+
+Sept 20
+
+Git reset (before commit)
+
+This will be used when you accidentally added file from workspace to stage area. Using the git reset option we can reset that operation
+
+Cmd : git add .
+To revert back
+Cmd : git reset .
+Now this file will become un tracked file
+
+Git revert (after commit)
+
+Its quite difficult to work on a file after committing
+If we run the command git revert , then it will execute below steps in the backend
+
+1)that specific file in workspace will be deleted
+2)that file's snapshot in staging area will be deleted
+3)it will create a new commit id in local repo by mentioning please ignore previous commit
+
+Cmd : vI testfile
+Cmd : git add testfile
+Cmd : git reset testfile
+Cmd : git status
+Cmd : git add testfile
+Cmd : git commit -m “my first commit”
+Cmd : git log - -oneline
+Cmd : git revert ddg456g
+
+Cmd : git clean -n   it will give a warning that its going to delete the all untracked files(file in workspace)
+Cmd : git clean -f    (forcefully)  this will delete all untracked files from workspace
+
+Tag
+
+Suppose if there is any important commit, its difficult to remember the number so tag can be assigned to it to remember easily.
+
+Cmd : git tag -a devops -m “my imp commit” 5876fdge ( a is for assign and m is for message)
+
+Cmd : git tag      - to show list of tags
+Cmd : git log - -oneline
+Cmd : git show devops
+Cmd : git tag -d devops     - to delete the tag(d for delete)
+
+Git clone(if central repo is already there then use this practice)
+
+Whatever the files and commits in central repository will be clone to local repository in which files will go to workspace and commits will be in local repository.
+
+Come out of mumbaigit before running clone command
+Cmd : cd ..
+Cmd : git clone https://github.com/pranoyvattakkil/gitcentralrepo.git (from where you got this link : go to github>code>https)
+
+So the name of central repo was gitcentralrepo, and now in the same name one local repo will be created
+Cmd : ls
+
+Difference between pull and clone. ?
+When you clone , central repository will be completely replicate to a local repository including files and commits. But when you pull only the modified file will be transfer to the local repo workspace.
+
+Now all the same push and pull operations can be done here.
+
+GitHub
+
+There is two stage, upper stage and lower stage
+
+Github is mainly for store and share data
+But team lead may work in this
+
+In github>main>create new branch>create test
+
+All the files will be replicate to test branch as well
+
+Pull request - Merging of branches in central repository
+
+1. create the pull request - it will check if there is any conflict, if not it is ready for merge
+2. Merge the pull request
+
+Common errors with git
+
+You have to pull first before push
+
+Suppose there is a file in centrol repo already(its commit will also there in down stage) and u create a new file in local repo then trying to push it towards central repo. You will get an error as rejected. Because git pull should be perform before pushing
+
+Create python file in central repo main
+Create a java file in mumbaigit and try to push. This will throw an error
+
+Sept 21
+
+Cmd : git pull origin main
+If any error is getting the try below
+Cmd : git config pull.rebase false
+Then enter the pull command
+Cmd : git pull origin main
+
+
+Conflict occurs when local repo and central repo is having same file name with different content. When you pull if its showing conflict then resolve it and push after that
+
+In mumbaigit
+Cmd : vi linuxfile.  , here add content like blue color data
+Cmd : git add .
+Cmd : git commit -m “blue”
+
+Create a file in central repository with name linux file and inside that enter red color data
+
+Cmd : git push origin main
+It will get rejected because first you have to pull before push
+
+Cmd : git pull origin main
+
+It will show automatic merge got failed and there is conflict in linuxfile
+
+Cmd : vi linuxfile
+Remove unnecessary data and let it be like blue color in first line and red color in second line
+
+Cmd : git add .
+Cmd : git commit -m “fixed conflict”
+Cmd : git push origin main
+
+Pushing means sync. That means when data is identical in local repository and central repository
+
+Now hit refresh in central repo, it will replicate as whatever the data in linuxfile in local repo.
+
+Add, delete lines from file
+
+When you add or delete a line from the file in local repository, same will reflect in your central repository file if you pushed it towards central repo.
+
+Delete file
+
+When you delete the file from local repository and after that executed the git push command then automatically that file from central repo will also delete.
+
+If I want to get the deleted file then we can’t get it from workspace or upper stage of central repository because we already deleted it, but you can get it from commits. 
+So the commits will stored the data even if the files are deleted from workspace and central repo.
+
+If you run git log  - -oneline you will get all the commits. To check each operation just run git show commit id, then u will get all the data
+
+
+Other branches
+
+If suppose there are two branches in local repo(main and new) and two branches in central repo(main and test) then 
+
+
+Cmd : vi file1
+Cmd : git add .
+Cmd : git commit -m “file1”
+Cmd : git push origin main:main
+Here first main is source and second one is destination
+
+Cmd : git checkout new  - its better to be on the branch u r working. so we are switching using this command
+Cmd : git branch
+Cmd : git pull origin main:new
+
+Cmd : git push origin new:test
+
+Go to GitHub central repository test branch and check, u will get file1 there
+
+if 3 members are there, once A tried to push the data, if it showing some conflict then he should understand that there is already data in central repository, so he need to pull the data first. suppose their also if he gets error then he need to re arrange the file (vi file name and remove unwanted lines) then save and push it towards the central repository. so whatever the files in A will be replicate to central repository.
+
+Sept 22
+
+Private repositories
+For private repository, while pulling/cloning you have to give credentials
+While pushing definitely need credential for both public and private
+
+SSH keys
+Two keys will generate, 1) public, 2) private
+Key means a file having some content
+
+Will copy public key to GitHub. And whenever u try to access the GitHub it will check the public key matches with the private key in the ec2 instance that you’re trying to connect
+Then it will establish connection.
+
+Private key will be locally available to you
+
+Cmd : cd..
+
+Cmd : ssh-keygen     - to generate keys
+
+Keys will be id_rsa    ,   id_rsa.pub create inside /root/.ssh folder
+
+
+You should not edit these keys using vi or nano file. Only use cat command.
+
+Cmd : ls -a
+Cmd : cd .ssh
+Cmd : cat id_rsa.pub
+Copy that content
+
+Then go to github>settings>ssh and GPG keys>new ssh key>title and paste the key content
+
+Now onwards use ssh instead of https to get the GitHub link(inside GitHub change the link from https to ssh)
+
+Cmd : cd ..
+Cmd : git clone git@github.com:pranoyvattakkil/22testmyrepo.git
+
+Here the connection is established. Even though it was a private repo it didn’t asked for credential. Because of ssh keys
+
+In windows
+
+Download git for windows and install
+
+Linux command promt on windows is gitbash
+Advantage is automatically it shows the path and branch
