@@ -1,0 +1,427 @@
+Sept 23
+
+Docker
+
+Container : its a virtual machine having OS, softwares
+
+Using docker we can create virtual machines(containers)
+
+1)OS level virtualisation(containerisation)
+2)used to create virtual machines
+3)designed to make containers in which we can deploy any type of applications easily
+4)docker uses union file system & Layered file system
+5)docker comes at deployment level
+
+Instead of virtualisation s/w we install docker
+
+Docker containers don’t have any operating system
+Here containers will only have software here and not consuming os
+So we are saving the hard disk space here.
+
+In VM ware we need to allocate RAM, but in docker during run time it will take the RAM which is required. After usage it will release the RAM
+
+Docker hub/docker registry - storing images
+
+They are taking 95% of unix from your base image(suppose RHEL) and remaining 5% from docker hub/registry. They are not taking physically but virtually
+
+We are calling as os level virtualisation because containers are depending on OS for virtualisation(container takes 95% of unix from base os)
+
+If base machine is windows, then there is no 95% of unix. But when you download docker for windows then that comes with 95% of unix.
+
+For linux machines only docker software  for windows docker with unix package
+Mainly docker is for linux machines
+
+Layered file system
+For each action on container it will be arranged like layer, like one top of other one.
+
+Union file system
+When you create image from container then this image format it constitute union format
+
+```
+Docker
+Important differences?
+
+```
+• Container : A container like a virtual machine
+• Docker : Docker is a tool to create those virtual machines
+
+```
+What is Docker??
+
+```
+- Docker is a tool that performs operating-system-level virtualization, also known as "containerization".
+- Docker is tool used to create virtual machines called "containers".
+- Docker word took from shipping containers.
+- Docker is a tool designed to make containers in which we can deployany type of applications easily.
+- Docker uses union file system & layered file system
+- Docker comes at Deployment level
+
+27 sept
+
+Docker benefits :
+
+-Containerization(OS level virtualisation)(No need guest OS)
+-No pre-allocation of RAM
+-Can replicate same environment
+-less cost
+-less weight(MB’s in size)
+-Fast to fire up
+-can run on physical/Virtual/Cloud
+-Can reuse(same image)
+-Can create machines in less time
+
+Docker components:
+
+-Docker image : contains OS(very small)(almost negligible) + Softwares
+-Docker Container: Container like a machine which is created from docker image
+-Docker file - describes steps to create docker image
+-Docker hub/registry : stores all docker images publicly
+-Docker daemon : Docker service
+
+Cmd : yum install docker -y
+
+Cmd : which docker
+
+Cmd : docker - -version - if you want to see the  version of the docker
+
+Cmd : service docker status - we need to start the docker service
+
+Cmd : service docker start  - use this command to start it
+
+Cmd : service docker status  - now this will show its active and running
+
+Cmd : chkconfig docker on
+
+Cmd : docker ps   - to see all the running list of containers(ps-process)
+
+Cmd : docker ps -a  - it shows all running/stopped containers
+
+Cmd : docker run -it ubuntu /bin/bash  - to create container
+
+It will verify if image is there or not, if not it pulls the particular image from docker hub to base machine. Then it will create copy of that image and create container.
+After that u will be inside of the container.
+(I - interactive t - terminal)
+
+If we want to work then we need one shell and one terminal. So here /bin/bash represents the shell (bash is inside bin directory of the top level root of the ubuntu os) and t represents the terminal
+
+You will be inside the container which is inside top level root directory
+
+Cmd : ls
+If you type ls you will get all the directories inside top level root directory.
+
+Type below command inside the container to verify the above
+
+Cmd : cat /etc/os-release  - it shows my container os is ubuntu os
+
+Cmd : exit - to go back to ec2 instance
+
+Cmd : docker images
+
+Ubuntu consumes very small size
+Cmd : docker ps   - to show running containers
+Cmd : docker ps -a
+
+Cmd : docker run -it ubuntu /bin/bash  - now it will take copy of existing image and from that it creates container
+So quickly it will create
+Cmd :exit
+Whenever u type exit container will stop automatically
+Cmd: docker images   - it will show only one image
+
+Cmd : docker ps -a
+It will show 2 containers
+
+Cmd : docker search ubuntu    - to check the image in docker hub
+It will show all the ubuntu related images
+
+Cmd : docker pull centos   - now we are pulling the image and place in base machine but its not creating any container
+
+Cmd: docker rename strange_hopper centoscont (rename the container)
+
+Cmd : docker run -it - -name pranoycontainer ubuntu /bin/bash(creating new container and giving name to the container)
+
+Cmd : docker start pranoycontainer  - to start the container
+
+Cmd : docker attach pranoycontainer   - to go inside the container
+
+If you want to delete container you have to stop first then delete. Also if you come out of the container terminal then container will automatically stop
+
+
+Cmd : docker stop pranoycontainer
+
+Cmd : docker ps
+
+Cmd : docker rm pranoycontainer
+
+If you want to delete the image then u have to delete the container first because there is interdependency
+
+Cmd : docker rmi Jenkins   - used to delete the image
+
+28 September:
+
+There are 3 ways to get the docker image
+
+1)docker hub
+2)from image create container, install sw and then create image
+3)Dockerfile
+
+Cmd : docker run -it  - -name pranoycontainer ubuntu /bin/bash
+
+Cmd : cd /tmp
+Cmd : touch myfile
+Cmd : exit
+Cmd : docker diff pranoycontainer -  diff is for on top of that container over the base image what are the operations u performed.
+
+Creating image from container is called commit.
+
+Cmd : docker commit pranoycontainer pranoyimage (am giving name as pranoyimage)
+Cmd : docker images
+Cmd : docker run -it - -name parucontainer pranoyimage /bin/bash (part container is created from pranoyimage)
+
+Now if you inside under temp dir u should see the my file we created.
+
+Cmd : cd /tmp
+Cmd: ls
+
+Creating image from Dockerfile:
+
+Dockerfile is a text file in which we add instructions. From this file we build image
+That image will be having the softwares u provided in the Dockerfile as instructions
+
+Instructions must be in upper case
+Dockerfile instructions
+FROM - to give OS details(ubuntu)
+RUN -  used to give any linux command
+WORKDIR - mentioning default directory pointing to once container is created
+ENV - environment variable(whenever you call myname then it will be replaced with pranoy everywhere, just check below eg Dockerfile)
+COPY - used to copy something from base machine to container
+ADD - if we want to copy multiple files from base machine to container. All the files will be created inside a directory and zip that file.
+Difference bw ADD and COPY is ADD instruction will untar your file at the destination
+
+
+Cmd : vi Dockerfile
+FROM ubuntu
+WORKDIR /tmp
+RUN echo”Hi Pranoy” > /tmp/testfile
+ENV myname pranoy
+COPY testfile1 /tmp
+ADD test.tar.gz /tmp
+
+
+Cmd : touch testfile1
+Cmd :mkdir test
+Cmd : cd /test
+Cmd : touch file{1..5}
+
+Cmd :cd ..
+Cmd: tar -cvzf test.tar.gz test
+Cmd : ls
+
+
+Cmd : docker build -t devopsimg .         - (t is tag)( . Represents current directory)(Dockerfile is not mentioned since its default)
+
+This will run all the instructions and will create a dockerimg image
+
+Cmd : docker run -it  - -name devopscontainer devopsimg /bin/bash
+
+Inside container you will be directed to /tmp as per the instruction and all the other commands in the Dockerfile will be executed after that
+
+Cmd : ls
+Cmd : cat testfile
+Cmd : echo $myname  (wherever its mentioned, it will call pranoy)
+Cmd : exit
+
+
+If you want to create one more Dockerfile with new image, then u can create new file (using vi) then add those instructions same as above. but its not recommended
+
+
+If two commands as instruction to provide in Dockerfile, try the below 
+; (colun+space) or  &&(space+two ambresent)
+
+Eg : RUN apt install tree git -y && touch /tmp/demofile
+
+Then when u r building u should mention the file name(saifile) like below. As it was Dockerfile it took automatically but here its different.
+Eg : docker build -t linuximg . -f saifile  
+
+29 September :
+
+Docker Volume :
+Its a directory inside the container. and we need to declare the directory in to volume
+This can be done while creating container. You can’t do it from existing container.
+
+Two type of volume mapping(mapping-connecting)
+1)Host to container (Base machine to container)
+2)Container to container 
+
+Container to container
+Cmd : vi Dockerfile
+
+FROM ubuntu
+VOLUME [“/data”]   - (volume should be mentioned inside square bracket with quotes)(we are creating a directory here inside top level root directory)
+
+Cmd : docker build -t myimg .
+Cmd : docker images
+Cmd : docker run -it - -name mycont1 myimg /bin/bash
+Under top level root directory u should able to see directory data and its a volume
+Cmd : ls
+In one container u can have only one volume
+Cmd : cd data
+Cmd : touch myfile
+Cmd : ls
+Cmd : exit
+
+Creating a separate container called mycont2 with ubuntu image
+
+Cmd : docker run -it - -name mycont2  - -privileged=true  - -volumes-from mycont1 ubuntu /bin/bash(privileged=true is like u r providing full access to files and folders)
+Under top level root directory of myconta2 will be having data volume shared by the mycont1. Hence inside u should see the myfile
+
+Cmd : cd data
+Cmd : ls
+
+Cmd : touch test
+Cmd : exit
+
+Go inside mycont1
+
+Cmd : docker start mycont1
+Cmd : docker ps
+Cmd : docker attach mycont1
+Cmd: cd data
+Cmd : ls
+U should able to see the test file here. Hence volumes can be shared in reverse order as well.
+
+Cmd : docker run -it - -name mycont3 -v /sai ubuntu /bin/bash(inside the mycont3 ,creating a directory and  declaring as volume inside top level root directory as sai)
+
+Cmd : ls
+
+So using two way we can create volume. One is by Dockerfile and the other is by command
+
+Host to container volume mapping
+Host here is ec2 instance
+
+Cmd: pwd
+Cmd: docker run -it - -name Parucont  -v /root:/raj ubuntu /bin/bash
+(/root is in base(ec2 instance) machine will be mapped to /raj which is  created inside Parucont and am declaring that into volume)(so all the files in /root should be available in /raj inside the Parucont)
+Cmd : ls
+
+Test it reverse
+Cmd : touch rajfile
+Cmd : ls
+
+Cmd : exit
+
+Cmd : ls
+In your base machine inside top level root directory u will see raj file.
+
+Cmd : docker inspect Parucont - it shows each and every details of container. In that it shows information about the container
+So how to know if volume is attached to container? 
+use docker inspect command
+
+30 September :
+
+Port mapping/Port expose
+
+Web package in ubuntu is apache
+Web package in centos is httpd
+
+Containers do not have any ip addresses. Hence we can’t access website(without ip address ) so to resolve it we have port mapping. Because containers do have ports
+
+We take one port from container and one port from base machine and map these two
+And will share the public ip of base machine to customer so that they can access.
+
+Why its port expose?
+We are exposing the container port to the outside world
+
+Why its port mapping?
+We are mapping container port with the base machine port
+
+We have to create container in such a way that even if we exit the container it should not stop.because its a web container
+So we are going to create in different way
+
+Cmd : docker run -td  - -name webcontainer -p 80:80 ubuntu /bin/bash (d - detached mode - when u create the container u won’t be inside the container because its not interactive and until and unless u stop the container it will be working)(first 80 is base machine port and second 80 is container port)
+Its not mandatory to mention the /bin/bash because automatically it will fetch the bash shell
+
+Cmd : docker ps
+Cmd : docker port webcontainer
+It shows  exclusively the ports
+
+For a container created with detached u can’t use docker attach command to go inside, use docker exec command
+
+Cmd : docker exec -it webcontainer /bin/bash
+
+Now we are inside the container.
+
+Cmd : apt-get update (apt is used in ubuntu)
+
+Cmd : apt-install apache2 -y   - we are installing web package content
+Cmd : cd /var/www/html
+Cmd : echo “hello” > index.html
+Cmd : ls
+Cmd : service apache2 start
+Cmd : service apache2 status
+
+Now make sure in base machine port 80 is opened
+
+In ec2 instance > security>inbound rules check if 80 is opened or not
+
+Take public ip from ec2 instance and enter in browser in such a way that publicip:80(enter port no manually) and search. So the request will go through 80 port
+
+Cmd : exit
+
+U can see that container is still working
+
+Website port is 80 and Jenkins port is 8080
+
+Cmd : docker run -td - -name jenkinscontainer -p 8080:8080 jenkins/jenkins
+
+Cmd : docker ps
+To access it it should be ipaddress:8080
+When we access through website, it will go through 8080 port of base machine to 8080 port of container which is mapped and the response will come in reverse order
+
+instance>security>security group>edit inbound rules>add rules
+Add 8080
+Then if you access the ipaddress:8080 it will start working
+
+You can’t map one port of base machine with many port of container. Only one port of base machine to other port of container will work.
+
+Dockerhub:
+
+Upload image to docker hub, others can pull the image from docker hub
+
+To upload image to docker hub, you have to login to it through command line
+
+Cmd : docker login
+
+You have to reserve some space in dockerhub(newpranoyimage). Why?
+Because when I push the image it will go to reserve space and can be accessed easily
+
+Cmd : docker tag myimage pranoyvattakkil/newpranoyimage(used to reserve space in dockerhub)
+
+Cmd : docker push pranoyvattakkil/newpranoyimage(no need to provide image name now, automatically image will go to the reserved space)
+
+Now onwards the reserved space name will become image name. Ie newpranoyimage
+
+Create another ec2 instance in different region. Inside that instance
+
+Cmd : docker pull pranoyvattakkil/newpranoyimage
+
+Cmd : docker images
+Now you can see the downloaded image from docker hub
+
+Cmd : docker run -it - -name parucont pranoyvattakkil/newpranoyimage /bin/bash
+
+So if you put 100 software in that image, you can see those here as well
+
+This is a public image, will change it to private
+Cmd : docker rmi pranoyvattakkil/newpranoyimage -f
+ So everyone cannot pull that image. If they want to pull then they have to login to docker hub
+
+Cmd: docker login
+Then u can pull the image
+Cmd : docker pull pranoyvattakkil/newpranoyimage
+
+If you want to stop all running containers
+Cmd: docker stop $(docker ps -a -q)
+If you want to delete all containers
+Cmd: docker rm $(docker ps -a -q)
+If you want to delete all images
+Cmd : docker rmi -f $(docker images -q)
