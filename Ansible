@@ -1,0 +1,1004 @@
+Ansible
+
+Configuration Management
+
+Managing (add/delete/edit)Each and every details of the machine 
+Configuration Management
+- It’s a method through which we automate
+admin tasks.
+- Configuration Management tool turns your
+code into infrastructure(IAC)
+- So your code would be Testable(using tool we can test the code)
+Repeatable(same code can be used again) & Versionable(code can be stored in git).
+
+Pain points:
+- Managing user & group accounts
+- Dealing with packages
+- Taking backup
+- Deploying all kinds of applications
+- Configure services
+
+Why Configuration Management Tool?
+- Complete Automation
+- Increase Uptime
+- Improve Performance
+- Ensure Compliance
+- Prevent Errors
+- Reduces Cost
+
+- Ansible is an administration tool. Whatever system admins (Linux/windows) used to do manually, now we are automating all those tasks by using Ansible (Any CM Tool)
+- Can use this tool whether your servers are in on-premises or in the cloud.
+- You only need to tell what the desired configuration should be, not how to achieve it
+- Through automation, get desired state of  Server.
+
+Architecture of Ansible:
+It consist of one server and other nodes/host. Server and node is connected using ssh.
+Inside the server there is a yaml in which we write the code is called playbook.
+There is a concept called modules, its a tool to perform related task.
+One such module is setup. Suppose a new file is creating in playbook, Setup module will go to all nodes through ssh and it collects complete information from those nodes from configuration files and it will make that information available to server and server will decide whether to execute the file
+So if the file is there in node then playbook will not execute it, this task is called idempotence(not doing the same task again)
+Ansible is a push mechanism because we are pushing the playbook
+
+We will be installing Ansible only in server.
+
+There is two ways to install Ansible.
+
+ Install & Configure Ansible(Server)
+  
+ Launch Amazon Linux (need not to install ansible in nodes)
+
+We have to install python before installing ansible
+There is a repository called epel. This repository consist of all the dependency packages.
+1)will download the epel repo
+2)install the epel repo(when u do this all packages inside the epel repo will be in downloaded state and not in install state)
+3)update the package(OS will recognise the downloaded package)
+4)then we can install individual package based on the need
+
+
+Cmd : yum install wget -y
+
+Cmd :wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+Cmd : yum install epel-release-latest-7.noarch.rpm -y
+
+Cmd : sudo yum update -y
+
+Cmd : sudo yum install git python python-devel python-pip openssl unusable -y    (these are the dependency packages)
+
+cmd : yum install ansible -y
+
+Cmd : ansible - -version
+2.9.27
+
+Main configuration file of Ansible is Ansible.cfg file this will be in /etc/ansible/ansible.cfg
+-------------------------------------------
+ Test Environment Setup(All Machines)
+
+Cmd : adduser ansadmin (in all machines)
+Cmd: passwd ansadmin (in all machines)
+Cmd : su - ansadmin
+
+He is unable to install packages as he don’t have sudo privilege
+
+There is a file called sudoers, if root user add user to sudoers file then they will get sudo power
+
+Cmd : visudo (add a line as below) (in all machines)(adding ansible user into sudo users list)
+
+Add below part in this file(in interactive mode)(after root ALL:ALL ALL field)
+     ansadmin ALL=(ALL) NOPASSWD: ALL
+
+To establish ssh connection among all nodes (do it in all machines)(need to modify the configuration file in oder to achieve ssh connection)
+
+Cmd : vi /etc/ssh/sshd_config (all mahines)
+PasswordAuthentication yes  (change this field in the file)
+
+Cmd : service sshd restart  (changes u made will come to effect)
+Now you can access the node from server machine using ssh(for that u should be providing node-1’s username, password and ip)
+Cmd : su - ansadmin  (login to ansadmin)
+Cmd : ssh ansadmin@172.31.16.115  
+After enter the password
+Then u will be in node-1
+    
+Test Environment Setup(Server)
+Check sudo works without asking password(In Server)
+Cmd : su - ansadmin
+Cmd : whoami
+Cmd : sudo yum update
+Cmd: ssh <node private IP>  (it prompts for
+password)
+ Run the following as ansadmin user to establish password less ssh(trust relationship)connection
+
+in server as ansadmin
+
+Cmd : ssh-keygen  (can see .ssh/both keys in same directory)
+
+Cmd : ls -a
+
+Under .ssh folder two keys got generated
+
+Cmd : Cd .ssh
+copy the ssh keys to all the nodes(be in master) (be in .ssh folder) (asks for password for the last time)
+Cmd : ssh-copy-id ansadmin@<node-private-ip> (in this step public key will be transferred to each node and it will create a file called authorized_keys and it will paste the public key)
+
+Test ssh to test machine, it should not ask password
+ssh <node-private-ip>
+
+Oct-17
+
+Modules - its a tool to create tasks
+
+Out of that there is setup module, it will go to nodes from server and it will collect all the configuration of that nodes to server.
+Ssh - inbuilt tool which helps server to communicate with nodes
+
+in last class, Created a common user in server and nodes>then we set password>we provided sudo privilege>established ssh connection(with password)
+>ssh(password less) connection created normal user to normal user.we did it in server node being ansadmin user
+
+When we installed ansible in server two files got created. 1 is ansible.cfg file and other is hosts(inventory) file. Both are inside ansible folder
+
+In server as ansadmin:
+
+ Cmd : sudo ls /etc/ansible
+
+Nodes/host ip address should be added in the hosts file then only server will connect to node
+
+Cmd : sudo vi /etc/ansible/hosts
+
+[webservers]       - group name which I defined
+172.31.16.23       - node 1 ip address
+172.31.20.6         - node 2 ip address
+
+Cmd : sudo vi /etc/ansible/ansible.cfg
+
+Remove the # from inventory, then only it will recognise the host
+
+Remove the # from sudo-user = root as well
+
+Lets check if hosts are added or not
+
+Cmd : ansible all - -list-hosts
+
+Cmd : ansible webservers[0]  - -list-hosts   - to show the first host
+
+Two ways to push code to node
+1)Ad-hoc
+2)Playbook
+Ad-hoc is simple commands and can be used then and there
+Playbook can be stored somewhere and used once required
+
+Cmd : ansible all -m command -a “ls”       - m is for module and a is for arbitrary(command u r going to execute inside)
+
+Here we are running ad-hoc command and it should list all the files inside the ansadmin home directory as I haven’t mentioned the location. Weknowthat there are two files in node 1 and node2.
+Hence those two files information will be available to server after running this command.
+
+If you want to add python and need to remove python related warning then perform below
+
+Cmd : sudo vi /etc/ansible/ansible.cfg
+
+Before inventory, add below line
+
+Interpreter_python=auto_silent
+
+Cmd : ansible all -m command -a “ls”
+
+There won’t be any warning now
+
+So without going physically into node I can see everything from server itself
+
+Cmd : ansible all -m command -a “sudo yum install tree -y”
+
+This will install tree in all the nodes. If there was 1000 then it will install in all.
+
+Cmd : ansible all -a “sudo yum remove tree -y”
+
+As we haven’t mentioned command module, by default it will take that and execute
+
+Cmd : ansible all -m command -a “yum install tree -y” -b   - if you’re adding -b it means becoming root user. So even though if you haven’t added in command but this method also u can call root without mentioning sudo
+
+Oct-18
+
+In ansadmin server
+
+Cmd : touch devopsfile
+Cmd : ansible all -b -m copy -a “src=devopsfile dest=/temp”  (copy is a module, src - for source, dest - for destination)
+
+To verify we can use the ls command inside server instead of going inside nodes.
+
+Cmd : ansible all -m command -a “ls /tmp” -b
+
+To install a package
+
+Cmd : ansible all -b -m yum -s “pkg=httpd state=present” (pkg is for package and state means whether u want to install or update or anything, present here means it will install)
+
+This will install httpd in node 1 and node 2
+
+To verify if its installed
+
+Cmd : ansible all -m command -a “which httpd” -b
+
+Cmd : ansible all -b -m yum -s “pkg=git state=present”   (to install git)
+
+To deploy the latest/updated httpd package
+
+Cmd : ansible all -b -m yum -s “pkg=httpd state=latest” 
+
+To uninstall the httpd package
+
+Cmd : ansible all -b -m yum -s “pkg=httpd state=absent” 
+
+To enable the service we have to use below command. Also the service should be mentioned in name field.
+
+Cmd : ansible all -b -m service -a “name=httpd state=started”
+
+To check if service is active
+
+Cmd : ansible all -b -m service -a “service httpd status”
+
+To restart and stop the service
+
+Cmd : ansible all -b -m service -a “name=httpd state=restarted”
+Cmd : ansible all -b -m service -a “name=httpd state=stopped”
+
+To deal with users
+
+Cmd : ansible all -b -m user -a “name=raj state=present”
+
+There are some default actions , even if you don’t mention “present” as state it will automatically create a user(for pkg=install, for user=create)
+
+Cmd : ansible all -m command -s “tail -2 /ets/passwd”  -b    - to find the raj user
+
+To remove the user, u should mention the state.
+
+Cmd : ansible all -m user -b “name=raj state=absent”
+
+PLAYBOOK
+
+Is a file in which we create using yaml script and used to provision infrastructure.
+
+- playbook is like a file where u write code
+- ansible-playbook <playbook>.yml
+- Playbooks are divided into many sections like
+     - target section - define the hosts(node details) against which playbook tasks has to be executed
+     - variable section - Defines variables
+     - Tasks section - List of all modules that we need to run, in an order
+-A playbook is a text file written in YAML(Yet Ain’t markup Language) format, and is normally saved as .yml
+-The playbook begins with a line consisting of three dashes(- - -) as a start of document marker.
+-Hosts and task are mandatory items in a playbook
+-Modules are used to perform tasks
+-Command start with # are just naming convention and won’t execute any task
+
+ YAML(Yet Aint Markup Language) Basics
+For ansible, nearly every YAML file starts with a list
+Each item in the list is a list of key/value pairs, commonly called a “dictionary”
+All YAML files have to begin with “- - -“ and end with “. . .”(not mandatory)
+All members of a list lines must begin with same indentation level starting with “-“
+
+ - - -   # A list of tasty fruits
+ Fruits :
+         - Apple
+         - Orange
+         - Mango
+ . . .
+
+
+A dictionary(dict) is represented in a simple key:value from (the colon must be followed by a space)
+
+ - - -   # An employee record
+ Employee :
+        Name : Pranoy
+        Job : DevOps Engineer
+ . . .
+
+______________________________________________________
+
+RUN a Ansible Playbook
+
+Cmd : vi create_user.yml
+
+- - -               # there should not be any gap between 3 hyphens)
+-  name: This playbook is to create a user                #shouldn’t use space after name or host in script
+    hosts: all                     #target section
+    become: true              #used to represent the sudo privilege
+    tasks:                #task section
+    -  name: creating a user rohit
+        user: name=rohit
+
+Cmd : ansible-playbook create_user.yml
+So this task will execute in all nodes as I mentioned as all in hosts(in target section). If suppose only web server then I can mention as hosts: webservers.
+
+_________________________________________________________
+
+
+Cmd : vi create_onemoreuser.yml
+
+- - -
+-  name: This playbook is to create a user  (shouldn’t use space after name or host in script)
+    hosts: all
+    become: true   (used to represent the sudo privilege, true /yes can be used)
+    tasks:
+    - name: creating a user akash
+       user: 
+           name: akash
+
+Cmd : ansible-playbook create_onemoreuser.yml
+
+____________________________________________________________
+
+FILE MODULE - create/remove a file/directory
+
+Cmd : vi create_file.yml
+
+- - -
+-   name: My test Playbook
+     hosts: all
+     become: true
+     tasks:
+     -   name: creating a file
+         file: 
+           path: /home/ansadmin/demofile
+           state: touch
+
+Cmd : ansible-playbook create_file.yml
+
+____________________________________________________________
+
+Cmd : vi create_directory.yml
+
+- - -
+-  name: My test playbook
+   hosts: all
+   become: true
+   tasks:
+   -  name: creating a directory
+       file:
+         path: /home/ansadmin/dir1
+         State: directory
+
+Cmd : ansible-playbook create_directory.yml
+
+If you search for file module in ansible, you will get the above script
+
+___________________________________________________________
+
+Delete directory:
+
+Cmd : vi delete_directory.yml
+
+- - -
+-  name: My Test playbook
+    hosts: all
+    become: true
+    tasks:
+    -  name: deleting a directory
+        file: 
+          path: /home/ansadmin/dir1
+          state: absent
+
+Cmd : ansible-playbook delete_directory.yml
+
+________________________________________________________
+
+Copy Module - copy a file on to managed nodes
+Suppose we need to do copy content in 1000 of nodes, then we will do the below
+
+cmd : vi index.html
+
+<h1> welcome to Ansible day </h1>
+
+cmd : vi copy_file.yml
+
+- - -
+-  name: My test playbook
+    hosts: all
+    become : true
+    tasks:
+     -  name: copy a file
+        copy: 
+            src: /home/ansadmin/index.html
+             dest: /home/ansadmin
+             mode: 0644
+             owner: akash
+
+Cmd : ansible-playbook copy_file.yml  - -check
+
+If you’re running this command then file won’t copy, in task (output of this command)you can see 2 and in changed u can see 1, this is actually a dry run. It will actually execute the playbook and will show what will be the output its creating and it won’t run.
+Cmd : ansible-playbook copy_file.yml  - -syntax-check
+
+This will also check but won’t execute the action.
+
+Cmd : ansible-playbook copy_file.yml
+_______________________________________________________
+
+Yum module - install package:
+
+Cmd : vi install_packages.yml
+
+- - -
+-  name: My Test playbook
+    hosts: webservers
+    become: true
+    tasks:
+    -  name: install package
+        yum: 
+           name: git
+            state: installed
+
+Cmd : ansible-playbook install_packages.yml
+
+Have a check of yum module in ansible in browser for the entire playbook code, also verify the state they have given for future use
+
+First task running is information provided by setup module as hosts are ok. Second task is whatever we mention in playbook will be executing.
+
+If suppose I provided # before become (like #become: true) then it will show permission error.
+And it will show failed as 1
+
+Also you can pass the parameter(sudo privilege) like below
+
+Cmd : ansible-playbook install_packages.yml -b
+____________________________________________________
+
+Cmd : vi install_httpd.yml
+
+- - -
+-  name: My Test playbook
+    hosts: webservers
+    become: true
+    tasks:
+    -  name: install httpd package
+        yum: 
+           name: httpd
+            state: installed
+  
+     -  name: start httpd service
+         service:
+             name: httpd
+             state: started
+
+Cmd : ansible-playbook install_httpd.yml
+
+
+In playbook first install package then start service.
+
+Check in node
+
+Cmd : service httpd status
+
+Verify in browser by copying the public ip 
+
+_____________________________________________________
+
+Cmd : vi uninstall_httpd.yml
+
+
+- - -
+-  name: My Test playbook
+    hosts: webservers
+    become: true
+    tasks:
+    -  name: stop httpd service
+        service: 
+           name: httpd
+            state: stopped
+    
+     -  name: uninstall httpd package
+         yum:
+             name: httpd
+             state: removed
+
+Cmd : ansible-playbook iuninstall_httpd.yml
+
+Verify in httpd in browser
+___________________________________________________
+
+Installing package and starting service, this is actually two tasks and inter dependent
+
+In this scenario we will be using handler. Because after finishing first task only second task can be executed.
+
+NOTIFY and Handler
+
+Cmd : vi install_httpd.yml
+
+- - -
+-  name: My Test playbook
+    hosts: webservers
+    become: true
+    tasks:
+    -  name: install httpd package
+        yum: 
+           name: httpd
+            state: installed
+        notify: start apache
+
+    handlers:
+     -  name: start apache
+         service:
+             name: httpd
+             state: started
+
+Cmd : ansible-playbook install_httpd.yml
+
+Here main task is mentioned in the task section and dependency task in handler section
+And notify is helping to connect task section and the handler section. Whatever display name mentioning in task should be in handler also. There should not be any spelling mistake
+
+So use of it will be like whenever the task execute successfully then only handler section will be executed.
+_______________________________________________________
+
+WHEN condition
+Its used suppose there are two task need to be executed and one is on Redhat(Amazon linux) machine and another is on Debian family(Ubuntu) machine. so the when separates this in a ansible playbook.
+
+Cmd : vi install_apache.yml
+
+- - -
+-   name: My Test Playbook
+     hosts: all
+     become: true
+     tasks:
+         -  name: install httpd package
+             yum:
+                 name: httpd
+                 state: installed
+            when: ansible_os_family == “Redhat”
+
+        -  name: start httpd service
+             service:
+                 name: httpd
+                 state: started
+            when: ansible_os_family == “Redhat”
+
+        -  name: install apache2 package
+             apt:
+                 name: apache2
+                 state: present
+            when: ansible_os_family == “Debian”
+    
+        -  name: start apache2 service
+             service:
+                 name: apache2
+                 state: started
+            when: ansible_os_family == “Debian”
+
+Using when condition first it will check if my node is redhat and if identified then it will execute the condition.otherwise it will skip and it won’t show any error.
+
+Why we are mentioning ansible_os_family ?
+
+Because of setup module, By running cmd : ansible all -m setup
+It collects all information from node. From this information it will show ansible_os_family is RedHat or Debian. So because of that  condition it declared as its in playbook.
+
+Cmd : ansible-playbook install_apache.yml - -check
+Cmd : ansible-playbook install_apache.yml
+
+
+It will skip the Debian condition in execution because we are using Amazon linux here.
+
+21 October :
+
+Adding copy task to apache playbook (webservers)
+
+Cmd : vi index.html
+<h1> welcome to ansible </h1>
+
+Cmd : vi install complete_webserver.yml
+
+---
+- name: My Test Playbook
+  hosts: all
+  become: true
+  tasks:
+  - name: install httpd
+    yum:
+     name: httpd
+     state: installed
+    when: ansible_os_family == "RedHat"
+
+  - name: start httpd service
+    service:
+     name: httpd
+     state: started
+    when: ansible_os_family == "RedHat"
+
+  - name: install apache2
+    apt:
+     name: apache2
+     state: present
+    when: ansible_os_family == "Debian"
+
+  - name: start apache2 service
+    service:
+     name: apache2
+     state: started
+    when: ansible_os_family == "Debian"
+
+  - name: copy index.html
+    copy:
+      src: /home/ansadmin/index.html
+      dest: /var/www/html
+             mode: 0666
+
+Cmd : ansible-playbook complete_webserver.yml
+so we can convert 2000 of servers into web servers using this. Irrespective of RedHat or Debian.
+
+Have a check of the node public ip in browser then u will get welcome to ansible as we mentioned in index.html file
+
+Loops concept:
+
+Lists and with same items
+
+Cmd : vi install_multiple_package.yml
+
+---
+- name: My test playbook
+  hosts: all
+  become: true
+  tasks:
+  - name: install packages
+    yum:
+     name: ['git','make','gcc','wget','telnet','mysql','tree','which','docker*']
+     state: installed
+
+Cmd : ansible-playbook install_multiple_package.yml
+
+Packages can be grouped under ‘ ‘(single quote) or “ “ as per your wish
+
+Using this pattern we can install all the packages. But for users u have to follow the below
+And we can add users as below
+
+Cmd : cp install_multiple_packages.yml create_multiple_users.yml
+
+Now the file will be copied and all the contents will be available in new file, and we can edit to create the users out of it
+
+Cmd : vi create_multiple_users.yml
+
+---
+- name: My test playbook
+  hosts: all
+  become: true
+  tasks:
+  - name: add a list of users
+    user: name='{{ item }}' state=present   
+    with_items:
+        - Raj
+        - Abhi
+        - Syam
+
+Cmd : ansible-playbook create_multiple_users.yml
+
+By executing above playbook it will add users from with items to item (which is defined as variable in the user module) and create.
+
+Cmd : ansible all -m command -a “tail -3 /etc/paswd”
+
+Now it will list the users.
+
+Variables:
+
+To define variable For windows we use % in linux we use $ in yaml we use $$ in the beginning and ending.
+
+Cmd : vi create_user_vars.yml
+
+---
+- name: My test playbook
+  hosts: all
+  become: true
+  vars:
+     user: sunny
+  tasks:
+  - name: create user {{user}}
+    user:
+      name: “{{user}}"
+
+when the play book executes, you can see that create user sunny will be there instead of create user user. Variable is replaced the display name also it will create a user called sunny.
+
+Why you’re not mentioning quotes in the line - name: create user {{user}}
+
+Need to provide quotes only if its comes starting in a line, otherwise not required (eg : name: “{{user}}”)
+
+There may be 200 of systems and using single playbook u can define this user everywhere.
+
+
+Cmd : vi user.yml
+
+user: dipika
+user1: devika
+
+Cmd : vi create_user_vars_file.yml
+
+---
+- name: My test playbook
+  hosts: all
+  become: true
+  vars_files:
+  - user.yml
+  tasks:
+  - name: create user {{user}}
+    user:
+      name: “{{user1}}”
+
+here we defined the file as user.yml and added two users into it then to access it externally calling it as vars_files then wherever you mention user and user1 then it will be replaced with the value inside the user.yml file.
+
+Variables can be passed in command line as extra variable well like below
+
+Cmd : ansible-playbook create_user_varsfile.yml -e “user=Rajesh”
+Cmd : ansible-playbook create_user_varsfile.yml - -extra-vars “user=Ramesh”
+
+Even though you have mentioned users in user.yml file to take list of users, but whatever is mentioned in command line will be having preference and will be executed.
+
+So variables can be defined in 3 ways
+How can you define variables?
+1. inside playbook 2)inside a file and call in variables of playbook 3) in the command line by giving -e and - -extra-vars
+
+22 October
+
+Convert shell commands into a Ansible playbook (Tomcat)
+
+What is Tomcat?
+Apache Tomcat server: Apache Tomcat is a web container. It allows the users to run Servlet and JAVA Server Pages that are based on the web-applications. It can be used as the HTTP server.
+
+To the client we will be delivering .war(it consist of webpage, backend connectivity pages and all dependencies) files. In this situation machine cannot understand the war file and an environment is required for that and its Tomcat.
+
+When u install tomcat in any machine it will become application server.
+
+To install Tomcat 
+
+1. install java (in RedHat) and default-jdk(in Debian)
+2. Download tomcat from browser(it will be tar.gz file)
+3. Extract tar file
+4. Give execute permission (for .sh file)
+5. Start service
+
+Try to create a test instance and use above steps to create tomcat by executing as linux commands and based on the execution create playbook on server.
+
+Test machine linux commands
+1)yum install java* -y
+2) wget https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.83/bin/apache-tomcat-8.5.83.tar.gz (got this from website: https://tomcat.apache.org/download-80.cgi)
+3)tar -xvzf apache-tomcat-8.5.83.tar.gz
+4)Copy the extracted file to /opt
+Go inside the cd/apache-tomcat-8.5.83/bin
+Give chmod 777 .startup.sh 
+5)./startup.sh
+
+Then open the 8080 port in security group and access the public ip of test instance:8080 in browser. You will get tomcat home page
+
+Server yaml file  :
+
+Cmd : vi setup-tomcat.yml
+
+Download module in Ansible is get_url
+Untar and unzip module in Ansible is unarchive
+
+---
+- name: My test playbook
+  hosts: all
+  become: true
+  tasks:
+  - name: install java on RedHat
+    yum:
+      name: java
+      state: installed
+    when: ansible_os_family == "RedHat"
+
+  - name: install java on ubuntu
+    apt:
+      name: default-jdk
+      state: present
+    when: ansible_os_family == "Debian"
+
+  - name: downloading tomcat
+    get_url:
+       url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.83/bin/apache-tomcat-8.5.83.tar.gz
+       dest: /opt
+   - name: extracting tar.gz file
+    unarchive:
+       src: /opt/apache-tomcat-8.5.83.tar.gz
+       dest: /opt
+       remote_src: True
+
+   - name: extracting tar.gz file
+    unarchive:
+       src: /opt/apache-tomcat-8.5.83.tar.gz
+       dest: /opt
+       remote_src: True
+
+  - name: changing permission of the file
+    file:
+      path: /opt/apache-tomcat-8.5.83/bin/startup.sh
+      mode: 0777
+
+  - name: starting tomcat service
+    shell: nohup ./startup.sh
+    args:
+      chdir: /opt/apache-tomcat-8.5.83/bin
+
+why are we using nohup?
+Nohup, short for no hang up is a command in Linux systems that keep processes running even after exiting the shell or terminal.
+
+23 October:
+
+Error handling:
+
+Even though there is any error it should not stop there, execution should be continued and error must be ignored.
+Its work with the help of ignore_errors
+---
+- name: My Test Playbook
+  hosts: all
+  become: true
+  tasks:
+  - name: install httpd
+    yum:
+     name: http- - -  #giving error intentionally
+     state: installed
+    when: ansible_os_family == “RedHat"
+    ignore_errors: yes   #rest will be executed and this step will be skipped
+
+  - name: start httpd service
+    service:
+     name: httpd
+     state: started
+    when: ansible_os_family == "RedHat"
+
+  - name: install apache2
+    apt:
+     name: apache2
+     state: present
+    when: ansible_os_family == "Debian"
+
+  - name: start apache2 service
+    service:
+     name: apache2
+     state: started
+    when: ansible_os_family == "Debian"
+
+  - name: copy index.html
+    copy:
+      src: /home/ansadmin/index.html
+      dest: /var/www/html
+             mode: 0666
+
+
+Even though there is error then it will ignore the steps and execute the rest.
+
+Ansible Vault :
+its a way to secure the playbook by encrypting it to provide better security.
+
+2 method
+1)By creating playbook we can encrypt
+2)we can encrypt already created playbook.
+
+1st way is cmd : ansible-vault create mytestplaybook.yml (creating new playbook)
+U should provide password here.
+
+To edit this encrypted playbook enter the below command
+
+Cmd : ansible-vault edit mytestplaybook.yml
+
+To change the password
+
+Cmd : ansible-vault rekey mytestplaybook.yml
+
+To decrypt the encrypted file
+
+Cmd : ansible-vault decrypt mytestplaybook.yml
+
+To encrypt an existing a playbook
+
+Cmd : ansible-vault encrypt mytestplaybook.yml
+
+25 October :
+
+Ansible Roles
+
+Diving playbook into respective directory structure is called roles.
+
+Instead of keeping all task in main playbook, we will be creating child playbook and calling in main playbook in sequence order. So main playbook will be short
+
+Child playbook name will b e main.yml
+
+In server
+Cmd : sudo su -
+Cmd: su - ansadmin
+
+Cmd : mkdir role
+Cmd : cd role
+Cmd : ansible-galaxy init setup-apache-role
+
+Cmd : ls
+
+Now the roles folder(setup-apache-role) will be created
+
+Cmd : tree
+
+Cmd : rm -rf setup-apache-role/defaults
+Cmd : rm -rf setup-apache-role/meta
+Cmd : rm -rf setup-apache-role/README.md
+Cmd : rm -rf setup-apache-role/templates
+Cmd : rm -rf setup-apache-role/tests
+Cmd : rm -rf setup-apache-role/vars
+
+Cmd: tree
+
+Now files, handlers and tasks 3 folders are inside of it
+
+Cmd : vi setup-apache-role/tasks/main.yml
+
+---
+# tasks file for setup-apache-role
+- name: install httpd package
+  yum:
+    name: httpd
+    state: installed
+  when: ansible_os_family == "RedHat"
+  notify: start httpd service
+
+- name: install apache2  package
+  yum:
+    name: apache2
+    state: present
+  when: ansible_os_family == "Debian"
+  notify: start apache2 service
+
+- name: copy index.html
+  copy:
+    src: /home/ansadmin/index.html
+    dest: /var/www/html
+    mode: 0666
+~                 
+
+Cmd : vi setup-apache-role/handlers/main.yml
+
+---
+# handlers file for setup-apache-role
+- name: start httpd service
+  service:
+    name: httpd
+    state: started
+    
+- name: start apache2 service
+  service:
+    name: apache2
+    state: started
+
+The file which is executing should be placed under the files section.
+Cmd : mv ../index.html setup-apache-role/files/
+I actually moved the index.html file, but I have to copy it then only this file will be available in my home folder as well.
+
+Cmd :  cp setup-apache-role/files/index.html ../
+As of now I created the folder, now am going to create the playbook 
+
+Cmd : vi setup-apache.yml
+
+---
+- name: This playbook install httpd
+  hosts: all
+  become: true
+  roles:
+  - setup-apache-role
+
+
+Before running this playbook just ensure you removed httpd package and previous index.html file from nodes.
+
+Cmd : cd role
+
+Cmd : ansible-playbook setup-apache.yml
+
+Now all the tasks will execute here. And it will skip the handler section.
+
+Now lets push all the yaml files into GitHub
+
+Cmd: cd ..
+Cmd: mkdir myplaybooks
+Cmd: mv *.yml myplaybooks  (moving all the yaml files to a directory called myplaybooks)
+
+Cmd : git init
+Cmd : git config  - - global user.name “pranoy”
+Cmd: git config - - global user.email “pranoyvattakil@gmail.com"
+Cmd: git add .
+Cmd : git status
+Cmd : git commit -m “myplaybooks”
+
+Go to your GitHub profile and create a new repository - ansibleplaybooks
+
+Cmd : git remote add origin https://github.com/Pranoyvattakkil/ansibleplaybooks.git
+
+Cmd : git branch -M main
+
+Cmd: git push -u origin main
+
+It will prompt for username (your e mail address- pranoyvattakkil@gmail.com)
+And password will be the token which you generated from settings>developer settings > access tokens > token(classical) > generate tokens (select all the fields before generating token)
